@@ -1,0 +1,34 @@
+！--从Linux dmesg获取的节点信息
+
+[    6.158792] snd_hda_codec_realtek hdaudioC0D0: autoconfig for ALC269VC: line_outs=1 (0x14/0x0/0x0/0x0/0x0) type:speaker
+[    6.158795] snd_hda_codec_realtek hdaudioC0D0:    speaker_outs=0 (0x0/0x0/0x0/0x0/0x0)
+[    6.158797] snd_hda_codec_realtek hdaudioC0D0:    hp_outs=1 (0x15/0x0/0x0/0x0/0x0)
+[    6.158798] snd_hda_codec_realtek hdaudioC0D0:    mono: mono_out=0x0
+[    6.158800] snd_hda_codec_realtek hdaudioC0D0:    inputs:
+[    6.158802] snd_hda_codec_realtek hdaudioC0D0:      Mic=0x18
+[    6.158803] snd_hda_codec_realtek hdaudioC0D0:      Internal Mic=0x12
+
+根据codex节点信图息拿到的节点路径
+
+有效节点	10进制	设备名称
+0x12	18	Internal Mic 内置 
+		0x9->0x22->0x12
+		9->34->18
+
+0x14	20	Speaker out 0x14->0x0d->0x03 内置
+		20->13->3
+
+0x15	21	HP out 0x15->0x0c->0x02 外置
+		21->12->2
+
+0x18	24	Mic 	外置
+		up:   0x08->0x23->0x0b->0x18 0x09->0x22->0x0b->0x18		
+		8->35->11->24 
+		9->34->11->24 //因为内置输入从9开始 所以外置从9开始的舍弃
+		
+		mid:  0x08->0x23->0x18
+		8->35->24
+		down: 0x09->0x22->0x18
+		9->34->24
+
+		最后：8->35->11->24 8->35->24 二选1

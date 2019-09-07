@@ -1,0 +1,148 @@
+
+Verbs from Linux Codec Dump File: codec#0.txt
+
+Codec: Realtek ALC269VC   Address: 0   DevID: 283902569 (0x10ec0269)
+1--Verbs拿到基本资料
+--------------------------------------------------------------------------------------------------------
+   Jack   Color  Description                  Node     PinDefault             Original Verbs
+--------------------------------------------------------------------------------------------------------
+Digital Unknown  Mic at Int N/A              18 0x12   0x90a60130   01271c30 01271d01 01271ea6 01271f90
+ Analog Unknown  Speaker at Int N/A          20 0x14   0x90170110   01471c10 01471d01 01471e17 01471f90
+    1/8   Black  HP Out at Ext Left          21 0x15   0x0321101f   01571c1f 01571d10 01571e21 01571f03
+Unknown  Purple  Line Out at Ext N/A         23 0x17   0x40008008   01771c08 01771d80 01771e00 01771f40
+ Mic at Ext Left    0x18 0x18                        60887072 01871c20 01871d10     01871ea1 01871f03  
+    1/8   Black  Speaker at Ext Rear         25 0x19   0x411111f0   01971cf0 01971d11 01971e11 01971f41
+    1/8   Black  Speaker at Ext Rear         26 0x1a   0x411111f0   01a71cf0 01a71d11 01a71e11 01a71f41
+    1/8   Black  Speaker at Ext Rear         27 0x1b   0x411111f0   01b71cf0 01b71d11 01b71e11 01b71f41
+    RCA  Purple  Reserved at Ext N/A         29 0x1d   0x40e48605   01d71c05 01d71d86 01d71ee4 01d71f40
+    1/8   Black  Speaker at Ext Rear         30 0x1e   0x411111f0   01e71cf0 01e71d11 01e71e11 01e71f41
+--------------------------------------------------------------------------------------------------------
+
+
+   Jack   Color  Description                  Node     PinDefault             Modified Verbs
+--------------------------------------------------------------------------------------------------------
+Digital Unknown  Mic at Int N/A              18 0x12   0x90a60130   01271c30 01271d00 01271ea6 01271f90
+ Analog Unknown  Speaker at Int N/A          20 0x14   0x90170110   01471c10 01471d00 01471e17 01471f90
+    1/8   Black  HP Out at Ext Left          21 0x15   0x0321101f   01571c40 01571d10 01571e21 01571f00
+Unknown  Purple  Line Out at Ext N/A         23 0x17   0x40008008   01771c50 01771d80 01771e00 01771f40
+ Mic at Ext Left    0x18 0x18                        60887072 01871c20 01871d10     01871ea1 01871f00  
+    RCA  Purple  Reserved at Ext N/A         29 0x1d   0x40e48605   01d71c60 01d71d80 01d71ee4 01d71f40
+--------------------------------------------------------------------------------------------------------
+
+Modified Verbs in One Line: 01271c30 01271d00 01271ea6 01271f90 01471c10 01471d00 01471e17 01471f90 01571c40 01571d10 01571e21 01571f00 01771c50 01771d80 01771e00 01771f40 01871c20 01871d10 01871ea1 01871f00 01d71c60 01d71d80 01d71ee4 01d71f40
+--------------------------------------------------------------------------------------------------------
+
+2--拿到相应数据 从codec中修正 搜索节点得到结果 进行PinDefault补充
+--------------------------------------------------------------------------------------------------------
+
+Codec: Realtek ALC269VC   Address: 0   DevID: 283902569 (0x10ec0269)
+
+Description                  Node     PinDefault   ---------------------------------------------------------------------------------------
+Mic at Int N/A              18 0x12   0x90a60130  Unknown
+Speaker at Int N/A          20 0x14   0x90170110   Unknown
+HP Out at Ext Left          21 0x15   0x0321101f   Black
+Line Out at Ext N/A         23 0x17   0x40008008    Purple
+Mic at Ext Left    		0x18 0x18 0x03a11020
+Speaker at Ext Rear         25 0x19   0x411111f0	Black
+Speaker at Ext Rear         26 0x1a    0x411111f0	Black
+Speaker at Ext Rear         27 0x1b    0x411111f0	Black
+Reserved at Ext N/A         29 0x1d    0x40e48605	Purple
+Speaker at Ext Rear         30 0x1e   0x411111f0	Black
+--------------------------------------------------------------------------------------------------------
+3--修正外置麦克风
+--------------------------------------------------------------------------------------------------------
+
+node     c  d  e  f
+12 	30 01 a6 90	[Fixed]	Mic at Int 		Unknown
+14	10 01 17 90	[Fixed]	Speaker at Int 		Unknown	EAPD
+
+15	1f 10 21 03	[Jack]	HP Out at Ext		Black	EAPD
+//修正二合一
+15	1f 10 2b 03	[Jack]	HP Out at Ext		Black	EAPD
+
+17 	08 80 00 40	[N/A]	Line Out at Ext 	Purple
+
+18 	20 10 a1 03	[Jack]	Mic at Ext Left		Black
+
+19	f0 11 11 41	[N/A]	Speaker at Ext Rear 	Black
+1a	f0 11 11 41	[N/A]	Speaker at Ext Rear 	Black
+1b	f0 11 11 41	[N/A]	Speaker at Ext Rear 	Black
+1d	05 86 e4 40	[N/A]	Reserved  at Ext	Purple
+1e	f0 11 11 41	[N/A]	Speaker  at Ext	Rear	Black
+--------------------------------------------------------------------------------------------------------
+
+4--去除杂音
+-------------------------------------------------------------------
+node     c  d  e  f
+12 	30 01 a6 90	[Fixed]	Mic at Int 		Unknown
+14	10 01 17 90	[Fixed]	Speaker at Int 		Unknown	EAPD
+
+15	1f 10 2b 03	[Jack]	HP Out at Ext		Black	EAPD
+
+18 	20 10 a1 03	[Jack]	Mic at Ext Left		Black
+
+17 	f0 00 00 40	[N/A]	Line Out at Ext 	Purple
+
+19	f0 00 00 40	[N/A]	Speaker at Ext Rear 	Black
+1a	f0 00 00 40	[N/A]	Speaker at Ext Rear 	Black
+1b	f0 00 00 40	[N/A]	Speaker at Ext Rear 	Black
+1d	f0 00 00 40	[N/A]	Reserved  at Ext	Purple
+1e	f0 00 00 40	[N/A]	Speaker  at Ext	Rear	Black
+
+5--生成最终的ConfigData
+-------------------------------------------------------------------
+ConfigData的计算公式为:
+Final Config:
+Address + Node + 71c +【c】
+Address + Node + 71d +【d】
+Address + Node + 71e +【e】
+Address + Node + 71f +【f】
+				    EDPA
+01271c30 01271d01 01271ea6 01271f90
+01471c10 01471d01 01471e17 01471f90 01470c02
+01571c1f 01571d10 01571e2b 01571f03 01570c02
+01871c20 01871d10 01871ea1 01871f03
+
+01771cf0 01771d00 01771e00 01771f40
+01971cf0 01971d00 01971e00 01971f40
+01a71cf0 01a71d00 01a71e00 01a71f40
+01b71cf0 01b71d00 01b71e00 01b71f40
+01d71cf0 01d71d00 01d71e00 01d71f40
+01e71cf0 01e71d00 01e71e00 01e71f40
+
+--二次修正 参考[修改ConfigData]之后的步骤.pdf
+
+				    EDPA
+01271c30 01271d01 01271ea6 01271f90
+01471c10 01471d01 01471e17 01471f90 01470c02
+01571c1f 01571d10 01571e2b 01571f03 01570c02
+01871c20 01871d10 01871e81 01871f03
+
+01771cf0 01771d00 01771e00 01771f40
+01971cf0 01971d00 01971e00 01971f40
+01a71cf0 01a71d00 01a71e00 01a71f40
+01b71cf0 01b71d00 01b71e00 01b71f40
+01d71cf0 01d71d00 01d71e00 01d71f40
+01e71cf0 01e71d00 01e71e00 01e71f40
+
+
+有效节点	10进制	设备名称
+0x12	18	Internal Mic 内置 
+		0x9->0x22->0x12
+		9->34->18
+
+0x14	20	Speaker out 0x14->0x0d->0x03 内置
+		20->13->3
+
+0x15	21	HP out 0x15->0x0c->0x02 外置
+		21->12->2
+
+0x18	24	Mic 	外置
+		up:   0x08->0x23->0x0b->0x18 0x09->0x22->0x0b->0x18		
+		8->35->11->24 
+		9->34->11->24
+		
+		mid:  0x08->0x23->0x18
+		8->35->24
+		down: 0x09->0x22->0x18
+		9->34->24

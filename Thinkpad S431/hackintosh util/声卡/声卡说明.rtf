@@ -1,0 +1,304 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf200
+{\fonttbl\f0\fnil\fcharset134 .PingFangSC-Regular;\f1\fnil\fcharset0 HelveticaNeue;\f2\fnil\fcharset134 PingFangSC-Regular;
+\f3\fnil\fcharset0 Monaco;\f4\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red53\green53\blue53;\red28\green80\blue152;\red255\green255\blue255;
+\red0\green0\blue0;\red255\green255\blue255;\red0\green0\blue255;}
+{\*\expandedcolortbl;;\cssrgb\c27059\c27059\c27059;\cssrgb\c13333\c39608\c66275;\cssrgb\c100000\c100000\c100000;
+\csgray\c0;\csgray\c100000;\csgenericrgb\c0\c0\c100000;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab560
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f0\fs24 \cf2 \'b7\'c2\'c3\'b0\'c9\'f9\'bf\'a8\'a3\'a8\'d0\'e8\'d2\'aa\'d4\'ad\'b0\'e6AppleHDA\'a3\'ac\'bd\'ab\'b7\'c2\'c3\'b0\'c9\'f9\'bf\'a8\'b7\'c5\'c8\'ebclover/kext/other\'d6\'d0\'a3\'ac\'b4\'f2\'cf\'c2\'c3\'e6\'c1\'bd\'b8\'f6\'b2\'b9\'b6\'a1\'d6\'d8\'c6\'f4\'bc\'b4\'bf\'c9\'a3\'a9\'a3\'ba
+\f1 \
+\pard\pardeftab560\slleading20\pardirnatural\partightenfactor0
+\cf2 \
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f0 \cf2 \'b2\'b9\'b6\'a1\'d2\'bb\'a3\'ba
+\f1 \
+ # This can fix non-working audio and also has an affect on HPET.\
+#\
+# Use this if you have issues with patched AppleHDA 
+\f0 (
+\f1 required on almost all laptops
+\f0 )
+\f1 \
+# or if you have issues with HPET 
+\f0 (
+\f1 restart after wake
+\f0 )
+\f1 .\
+\
+# IRQ fix\
+into device name_hid PNP0000 code_regex IRQNoFlags\\s\\
+\f0 (
+\f1 \\
+\f0 )
+\f1 \\n\\s+\\\{
+\f0 (
+\f1 \\d+
+\f0 )
+\f1 \\\} remove_matched
+\f0 ;
+\f1 \
+into device name_hid PNP0100 code_regex IRQNoFlags\\s\\
+\f0 (
+\f1 \\
+\f0 )
+\f1 \\n\\s+\\\{
+\f0 (
+\f1 \\d+
+\f0 )
+\f1 \\\} remove_matched
+\f0 ;
+\f1 \
+into device name_hid PNP0B00 code_regex IRQNoFlags\\s\\
+\f0 (
+\f1 \\
+\f0 )
+\f1 \\n\\s+\\\{
+\f0 (
+\f1 \\d+
+\f0 )
+\f1 \\\} remove_matched
+\f0 ;
+\f1 \
+into device name_hid PNP0103 code_regex IRQNoFlags\\s\\
+\f0 (
+\f1 \\
+\f0 )
+\f1 \\n\\s+\\\{.*\\\} removeall_matched
+\f0 ;
+\f1 \
+into device name_hid PNP0103 code_regex Name\\s\\
+\f0 (([
+\f1 ^
+\f0 ,]
+\f1 +
+\f0 ),
+\f1 \\sResourceTemplate\\s\\
+\f0 (
+\f1 \\
+\f0 )
+\f1 .*\\n\\s+\\\{
+\f0 ((
+\f1 ?:.|\\n
+\f0 )
+\f1 *
+\f0 )
+\f1 \\\}\\
+\f0 )
+\f1  replace_matched\
+begin\
+Name 
+\f0 (
+\f1 %1
+\f0 ,
+\f1  ResourceTemplate
+\f0 ()
+\f1 \\n\
+\{\\n\
+    IRQNoFlags
+\f0 ()
+\f1  \{ 0
+\f0 ,
+\f1  8
+\f0 ,
+\f1  11
+\f0 ,
+\f1  15 \}\\n\
+%2\
+\}
+\f0 )
+\f1 \\n\
+end
+\f0 ;
+\f1 \
+\
+
+\f0 \'b2\'b9\'b6\'a1\'b6\'fe\'a3\'a8\'d7\'a2\'c8\'eb
+\f1 id 0x03 
+\f2 \'cb\'b5\'c3\'f7\'ce\'d2\'b5\'c4\'ca\'c7
+\f1 3
+\f0 \'a3\'a9\'a3\'ba
+\f1 \
+#   Inject Audio info\
+into method label _DSM parent_label HDEF remove_entry
+\f0 ;
+\f1 \
+into device label HDEF insert\
+begin\
+Method 
+\f0 (
+\f1 _DSM
+\f0 ,
+\f1  4
+\f0 ,
+\f1  NotSerialized
+\f0 )
+\f1 \\n\
+\{\\n\
+    If 
+\f0 (
+\f1 LEqual 
+\f0 (
+\f1 Arg2
+\f0 ,
+\f1  Zero
+\f0 ))
+\f1  \{ Return 
+\f0 (
+\f1 Buffer
+\f0 ()
+\f1  \{ 0x03 \} 
+\f0 )
+\f1  \}\\n\
+    Return 
+\f0 (
+\f1 Package
+\f0 ()
+\f1 \\n\
+    \{\\n\
+        "AAPL
+\f0 ,
+\f1 slot-name"
+\f0 ,
+\f1  Buffer
+\f0 ()
+\f1  \{ "Built in" \}
+\f0 ,
+\f1 \\n\
+        "layout-id"
+\f0 ,
+\f1  Buffer
+\f0 ()
+\f1  \{ 0x03
+\f0 ,
+\f1  0x00
+\f0 ,
+\f1  0x00
+\f0 ,
+\f1  0x00 \}
+\f0 ,
+\f1 \\n\
+        "device_type"
+\f0 ,
+\f1  Buffer
+\f0 ()
+\f1  \{ "Audio Controller" \}
+\f0 ,
+\f1 \\n\
+        "built-in"
+\f0 ,
+\f1  Buffer
+\f0 ()
+\f1  \{ 0x00 \}
+\f0 ,
+\f1 \\n\
+        "PinConfigurations"
+\f0 ,
+\f1  Buffer
+\f0 ()
+\f1  \{ \}
+\f0 ,
+\f1 \\n\
+        "hda-gfx"
+\f0 ,
+\f1  Buffer
+\f0 ()
+\f1  \{ "onboard-1" \}\\n\
+    \}
+\f0 )
+\f1 \\n\
+\}\\n\
+end\
+\pard\pardeftab560\slleading20\pardirnatural\partightenfactor0
+\cf2 \
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f0 \cf2 \'c8\'fd
+\f1  
+\f0 \'cd\'a8\'b5\'e7\'b1\'ac\'d2\'f4\'a1\'a2\'cb\'af\'c3\'df\'ce\'de\'c9\'f9\'a3\'ba
+\f1 \
+CodecCommander.kext
+\f0 \'b7\'c5clover\'b5\'c4other\'d6\'d8\'c6\'f4\'bc\'b4\'bf\'c9\
+
+\f1 CodecCommander.kext
+\f0 \'d0\'e8\'d2\'aa
+\f2 \'d0\'de\'b8\'c4\'a3\'ac\'bc\'fb\'b4\'cb\'cc\'fb
+\f1 13
+\f2 \'c2\'a5
+\f0 \
+\pard\pardeftab560\slleading20\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "http://bbs.pcbeta.com/forum.php?mod=viewthread&tid=1650979"}}{\fldrslt \cf2 http://bbs.pcbeta.com/forum.php?mod=viewthread&tid=1650979}}\
+\
+ \'ca\'b9\'d3\'c3 
+\f3 \cf3 \cb4 \expnd0\expndtw0\kerning0
+ioreg | grep EngineOutput\
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f0 \cf2 \cb1 \kerning1\expnd0\expndtw0 \'b5\'c3\'b3\'f6
+\f4\fs22 \cf5 \cb6 \CocoaLigature0  | |   |   |         +-o AppleHDAEngineOutput@1B,0,1,1  <\
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f2 \'c8\'a1
+\f4 1B 0
+\f2 \'c1\'bd\'b8\'f6\'ca\'fd\'d6\'b5
+\f4 \
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f0\fs24 \cf2 \cb1 \CocoaLigature1 \'b1\'e0\'bc\'ad
+\f4\fs22 \cf5 \cb6 \CocoaLigature0 CC
+\f2 \'b0\'fc\'c4\'da\'c8\'dd\'b5\'c4
+\f4 info 
+\f2 \'b8\'c4\'cf\'e0\'d3\'a6\'ce\'bb\'d6\'c3\'ca\'fd\'d6\'b5\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\pardirnatural\partightenfactor0
+
+\f4\fs20 \cf7 \cb1 \CocoaLigature1 \'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7\'b7<key>\cf0 Default\cf7 </key>\cf0 \
+				\cf7 <dict>\cf0 \
+					\cf7 <key>\cf0 Check Infinitely\cf7 </key>\cf0 \
+					\cf7 <true/>\cf0 \
+					\cf7 <key>\cf0 Check Interval\cf7 </key>\cf0 \
+					\cf7 <integer>\cf0 3000\cf7 </integer>\cf0 \
+					\cf7 <key>\cf0 Codec Address Number\cf7 </key>\cf0 \
+					\cf7 <integer>\cf0 0\cf7 </integer>\cf0 \
+					\cf7 <key>\cf0 HDEF Device Location\cf7 </key>\cf0 \
+					\cf7 <string>\cf0 1B\cf7 </string>\cf0 \
+					\cf7 <key>\cf0 Send Delay\cf7 </key>\cf0 \
+					\cf7 <integer>\cf0 300\cf7 </integer>\cf0 \
+				\cf7 </dict>\
+
+\f0\fs24 \cf2 \
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf2 \'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\
+\'bb\'f2\'d5\'df\'c4\'e3\'bf\'c9\'d2\'d4\'bf\'bc\'c2\'c7\'d3\'c3EAPDFix_v2.3.5\
+\pard\pardeftab560\slleading20\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "http://forum.osxlatitude.com/index.php?/topic/3084-eapdjack-sense-fix-no-sound-and-jack-sense-issue-after-sleep/"}}{\fldrslt \cf2 http://forum.osxlatitude.com/index.php?/topic/3084-eapdjack-sense-fix-no-sound-and-jack-sense-issue-after-sleep/}}\
+\'ca\'b9\'d3\'c3\'bf\'c9\'d2\'d4\'bf\'b4\'d5\'e2\'c0\'ef\'a3\'ba{\field{\*\fldinst{HYPERLINK "http://bbs.pcbeta.com/forum.php?mod=viewthread&tid=1514147"}}{\fldrslt http://bbs.pcbeta.com/forum.php?mod=viewthread&tid=1514147}}\
+\
+\'b4\'d3codec\'d6\'d0\'c4\'c3\'b5\'bd\'d2\'d4\'cf\'c2\'d6\'b5\'b5\'c4\'bd\'da\'b5\'e3\'d7\'aa\'ce\'aa\'ca\'ae\'bd\'f8\'d6\'c6\
+Speaker\
+\
+node \'a3\'ba0x14\
+\'ca\'ae\'bd\'f8\'d6\'c6\'a3\'ba 20\
+\'cf\'c2\'cd\'ac\
+Headphone\
+\
+0x15 21\
+\
+Mic\
+0x12 18\
+\
+\'cc\'e6\'bb\'bbinfo\'d6\'d0\'b6\'d4\'d3\'a6\'b5\'c4\'d6\'b5\'a3\'actype\'ce\'d2\'d1\'a13\'b2\'c5\'bf\'c9\'d0\'d0\
+\
+\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\'a1\'aa\
+\'d0\'c2\'b0\'e6CC\'ca\'b9\'d3\'c3\'a3\'ba\
+\'b4\'d3codec\'d6\'d0\'c4\'c3\'b5\'bdSubsystem Id: 0x17aa0001\
+\'c8\'a117aa_0001\'cc\'e6\'bb\'bbinfo\'d6\'d0\'b5\'c4\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab560\pardirnatural\partightenfactor0
+
+\f4\fs20 \cf0 		\cf7 <string>\cf0 Realtek ALC269 BRIX\cf7 </string>\cf0 \
+				\cf7 <key>\cf0 10ec_0269_HDA_17AA_0001\cf7 </key>
+\f0\fs24 \cf2 \
+\'bf\'b4\'c4\'e3\'b5\'c4\'cf\'b2\'ba\'c3\'c1\'cb\'a3\'ac\'cb\'e6\'b1\'e3\'cc\'e6\'bb\'bb\'d2\'bb\'b8\'f6\'d2\'b2\'d0\'d0\'a3\'ac\'d0\'a7\'b9\'fb\'ba\'cd\'b5\'da\'d2\'bb\'b8\'f6cc\'d2\'bb\'d1\'f9}
